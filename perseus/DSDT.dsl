@@ -140,13 +140,13 @@ DefinitionBlock ("", "DSDT", 2, "QCOMM ", "SDM850 ", 0x00000003)
                         "\\_SB.GIO0", 0x00, ResourceConsumer, ,
                         )
                         {   // Pin list
-                            0x00C0
+                            112
                         }
                     GpioIo (Shared, PullUp, 0x0000, 0x0000, IoRestrictionNone,
                         "\\_SB.GIO0", 0x00, ResourceConsumer, ,
                         )
                         {   // Pin list
-                            0x007E
+                            126
                         }
                 })
                 Return (RBUF) /* \_SB_.SDC2._CRS.RBUF */
@@ -62462,7 +62462,9 @@ DefinitionBlock ("", "DSDT", 2, "QCOMM ", "SDM850 ", 0x00000003)
 
         Device (TSC1)
         {
-            Name (_HID, "MSHW1003")  // _HID: Hardware ID
+            Name (_HID, "TEST3330")  // _HID: Hardware ID
+            Name (_HRV, One)  // _HRV: Hardware Revision
+            Name (_ADR, Zero)  // _ADR: Address
             Name (_UID, One)  // _UID: Unique ID
             Name (_DEP, Package (0x03)  // _DEP: Dependencies
             {
@@ -62474,7 +62476,8 @@ DefinitionBlock ("", "DSDT", 2, "QCOMM ", "SDM850 ", 0x00000003)
             {
                 Name (RBUF, ResourceTemplate ()
                 {
-                    I2cSerialBusV2 (0x0020, ControllerInitiated, 0x00061A80,
+                    //I2cSerialBusV2 (0x0020, ControllerInitiated, 0x00061A80,
+                    I2cSerialBusV2 (0x0001, ControllerInitiated, 0x00061A80,
                         AddressingMode7Bit, "\\_SB.IC13",
                         0x00, ResourceConsumer, , Exclusive,
                         )
@@ -62484,14 +62487,77 @@ DefinitionBlock ("", "DSDT", 2, "QCOMM ", "SDM850 ", 0x00000003)
                         {   // Pin list
                             0x007D
                         }
-                    GpioIo (Exclusive, PullNone, 0x0000, 0x0000, IoRestrictionNone,
-                        "\\_SB.GIO0", 0x00, ResourceConsumer, ,
-                        )
-                        {   // Pin list
-                            0x0063
-                        }
+                    //GpioIo (Exclusive, PullNone, 0x0000, 0x0000, IoRestrictionNone,
+                    //    "\\_SB.GIO0", 0x00, ResourceConsumer, ,
+                    //    )
+                    //    {   // Pin list
+                    //        0x0063
+                    //    }
                 })
                 Return (RBUF) /* \_SB_.TSC1._CRS.RBUF */
+            }
+
+            Method (_DSM, 4, NotSerialized)  // _DSM: Device-Specific Method
+            {
+                While (One)
+                {
+                    Name (_T_0, Buffer (0x01)  // _T_x: Emitted by ASL Compiler
+                    {
+                         0x00                                             // .
+                    })
+                    CopyObject (ToBuffer (Arg0), _T_0) /* \_SB_.TSC1._DSM._T_0 */
+                    If ((_T_0 == ToUUID ("3cdff6f7-4267-4555-ad05-b30a3d8938de") /* HID I2C Device */))
+                    {
+                        While (One)
+                        {
+                            Name (_T_1, 0x00)  // _T_x: Emitted by ASL Compiler
+                            _T_1 = ToInteger (Arg2)
+                            If ((_T_1 == Zero))
+                            {
+                                While (One)
+                                {
+                                    Name (_T_2, 0x00)  // _T_x: Emitted by ASL Compiler
+                                    _T_2 = ToInteger (Arg1)
+                                    If ((_T_2 == One))
+                                    {
+                                        Return (Buffer (One)
+                                        {
+                                             0x03                                             // .
+                                        })
+                                    }
+                                    Else
+                                    {
+                                        Return (Buffer (One)
+                                        {
+                                             0x00                                             // .
+                                        })
+                                    }
+
+                                    Break
+                                }
+                            }
+                            ElseIf ((_T_1 == One))
+                            {
+                                Debug = "Method _DSM Function HID"
+                                Return (0x20)
+                            }
+                            Else
+                            {
+                            }
+
+                            Break
+                        }
+                    }
+                    Else
+                    {
+                        Return (Buffer (One)
+                        {
+                             0x00                                             // .
+                        })
+                    }
+
+                    Break
+                }
             }
 
             Name (PGID, Buffer (0x0A)
